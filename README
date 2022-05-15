@@ -1,0 +1,76 @@
+Gnutella implementation:
+	
+	TO RUN:
+		javac *.java
+		
+		//FOR FIRST NODE
+		java Main --port {port}
+		
+		//FOR EVERY SUBSQUENT NODE, NOTE YOU MUST USE A NEW PORT IN THE SECOND PORT FIELD, THE ip:port FIELD SHOULD CONTAIN THE PREVIOUSLY OPENED PORT
+		java Main --connect {ip:port} --port {port}
+
+		//TO ADD A QUERY
+		java Main --connect {ip:port} --port {port} --query {filename searchTime}
+
+		
+		//EXAMPLE WITH NEW SESSIONS ON EVERY NEW LINE
+		java Main --port 5051
+		
+		java Main --connect localhost:5051 --port 5052
+
+		java Main --connect localhost:5052 --port 5053 --query testfile 100
+
+
+
+	message format:
+		
+		PING:
+			byte offset:			
+				0-1: port
+				2-5: ip
+				6-9: files
+				10-13: file size
+				14-18: id
+
+		QUERY:
+			byte offset:
+				0-1: port
+				2-5: ip
+				6-9: query id
+				10-17: search time
+				18-25: timestamp
+				26-29: search size
+				30 - ... : query
+
+
+	OVERVIEW:
+		BeaconSender:
+			tracks the active nodes and keeps track of when to drop a node that has not responded in a set amount of time
+			also responsable for sending out pings periodically
+
+		FileSystem:
+			System calls to search through given directories
+
+		Main:
+			parses inital command input and manages over all other threads
+
+		Node:
+			Template class responsable for holding data related to pings
+		
+		PingListener:
+			recieves pings and differentiates between pingpong and query message
+		
+		ProccessPing:
+			keeps track of when new pings are added to list of connected nodes
+
+		ProccessQuery:
+			responsable for taking a given query and if acceptable returning an output stream for said file
+
+		query:
+			template class for query message structure
+
+		querySender:
+			responsable for intially sending out a query tracks and manages downloading the file
+
+		test:
+			small test file used for testing out query function
